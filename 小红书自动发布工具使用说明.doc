@@ -1,0 +1,218 @@
+<root id="root_1"><article id="article_2">
+
+<ag-fullwidth class="bg-gray-900 px-10 pt-14 pb-14 text-center min-h-[200px]" image="UGTdbbRgAovEbTxkooKlP7dsgac" id="ag-fullwidth_10_0">
+  <ag-fullwidth-item class="flow-root max-w-[834px] mx-auto" id="ag-fullwidth-item_11_0">
+    <ag-text class="text-[34px] leading-[48px] font-semibold text-white" style="margin-bottom: 12px" id="ag-text_12_0">小红书图文自动发布系统使用手册</ag-text>
+    <ag-text class="text-[20px] leading-[28px] font-normal text-gray-200" id="ag-text_13_0">基于 Playwright 与 OpenAI 的自动化运营解决方案</ag-text>
+  </ag-fullwidth-item>
+</ag-fullwidth>
+
+<ag-h level="1" seq="auto" id="ag-h_14_0">项目概述与能力说明</ag-h>
+<ag-text id="ag-text_15_0">本项目（xhs-auto-poster）旨在为小红书内容创作者提供一套轻量级的自动化运营工具。通过结合 <ag-text-inline class="text-blue-600 font-medium" id="ag-text-inline_16_0">OpenAI</ag-text-inline></ag-text> 的文本生成能力与 <ag-text-inline class="text-green-600 font-medium" id="ag-text-inline_17_0">Playwright</ag-text-inline> 的浏览器自动化技术，实现从话题构思到图文发布的自动化闭环。</article>
+
+<ag-column width-ratio="1" id="ag-column_18_0">
+  <ag-column-item width-ratio="0.5" id="ag-column-item_19_0">
+    <ag-card class="px-5 py-6 bg-slate-50 rounded-lg h-full" id="ag-card_20_0">
+      <ag-h level="3" id="ag-h_21_0">核心能力</ag-h>
+      <ag-bullet id="ag-bullet_22_0">
+        <ag-list-item id="ag-list-item_23_0"><ag-text-inline id="ag-text-inline_24_0"><strong id="strong_25_0">AI 文案生成</strong>：基于预设话题，自动生成标题、正文与合规标签。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_26_0"><ag-text-inline id="ag-text-inline_27_0"><strong id="strong_28_0">自动配图</strong>：自动从本地素材库读取图片并分配给对应笔记。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_29_0"><ag-text-inline id="ag-text-inline_30_0"><strong id="strong_31_0">网页端自动发布</strong>：模拟人工操作，自动上传图片、填写内容并点击发布。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_32_0"><ag-text-inline id="ag-text-inline_33_0"><strong id="strong_34_0">批量队列管理</strong>：通过 CSV 文件管理待发布任务，支持人工干预与审核。</ag-text-inline></ag-list-item>
+      </ag-bullet>
+    </ag-card>
+  </ag-column-item>
+  <ag-column-item width-ratio="0.5" id="ag-column-item_35_0">
+    <ag-card class="px-5 py-6 bg-slate-50 rounded-lg h-full" id="ag-card_36_0">
+      <ag-h level="3" id="ag-h_37_0">工作流程</ag-h>
+      <ag-ordered id="ag-ordered_38_0">
+        <ag-list-item seq="1" id="ag-list-item_39_0"><ag-text-inline id="ag-text-inline_40_0"><strong id="strong_41_0">准备阶段</strong>：配置环境、放入图片素材、导出登录 Cookies。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_42_0"><ag-text-inline id="ag-text-inline_43_0"><strong id="strong_44_0">生成阶段</strong>：运行生成脚本，AI 根据话题产出文案并写入队列。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_45_0"><ag-text-inline id="ag-text-inline_46_0"><strong id="strong_47_0">审核阶段</strong>（可选）：人工查看 CSV 队列，微调文案或图片分配。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_48_0"><ag-text-inline id="ag-text-inline_49_0"><strong id="strong_50_0">发布阶段</strong>：运行发布脚本，自动执行网页端发布动作。</ag-text-inline></ag-list-item>
+      </ag-ordered>
+    </ag-card>
+  </ag-column-item>
+</ag-column>
+
+<ag-h level="1" seq="auto" id="ag-h_51_0">运行前准备与安全提示</ag-h>
+<ag-text id="ag-text_52_0">在正式运行之前，必须完成以下配置以确保程序能正确访问 OpenAI 接口和小红书创作者中心。</ag-text>
+
+<ag-h level="2" id="ag-h_53_0">1. 环境变量配置</ag-h>
+<ag-text id="ag-text_54_0">请在项目根目录创建 <ag-code-inline id="ag-code-inline_55_0">.env</ag-code-inline> 文件，并填入您的 OpenAI API Key。这是调用 AI 生成文案的必要凭证。</ag-text>
+<ag-code language="Bash" caption="项目根目录 .env 文件示例" id="ag-code_56_0">
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# 可选：如果需要自定义创作者中心 URL（通常不需要修改）
+# XHS_CREATOR_URL=https://creator.xiaohongshu.com
+</ag-code>
+
+<ag-h level="2" id="ag-h_57_0">2. 登录凭证（Cookies）导出</ag-h>
+<ag-text id="ag-text_58_0">由于项目采用非侵入式的网页自动化方案，需要您预先提供登录状态。请按照以下步骤操作：</ag-text>
+<ag-bullet id="ag-bullet_59_0">
+  <ag-list-item id="ag-list-item_60_0"><ag-text-inline id="ag-text-inline_61_0">在本地浏览器（Chrome/Edge）中打开小红书创作者中心并完成登录。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_62_0"><ag-text-inline id="ag-text-inline_63_0">使用浏览器插件（如 &#34;EditThisCookie&#34;）导出所有 Cookies 为 JSON 格式。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_64_0"><ag-text-inline id="ag-text-inline_65_0">将导出的文件重命名为 <ag-code-inline id="ag-code-inline_66_0">cookies.json</ag-code-inline>。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_67_0"><ag-text-inline id="ag-text-inline_68_0">将文件放置在服务器或工作区的 <ag-code-inline id="ag-code-inline_69_0">/home/user/workspace/upload/</ag-code-inline> 目录下。</ag-text-inline></ag-list-item>
+</ag-bullet>
+<ag-quote class="border-l-4 border-yellow-500 pl-4 py-2 bg-yellow-50" id="ag-quote_70_0">
+  <ag-text id="ag-text_71_0"><strong id="strong_72_0">安全提示：</strong> <ag-code-inline id="ag-code-inline_73_0">cookies.json</ag-code-inline> 包含您的账户身份凭证，请勿将其上传到公开的代码仓库（GitHub 等）。项目代码中已将其包含在 <ag-code-inline id="ag-code-inline_74_0">.gitignore</ag-code-inline> 范围内（建议），请务必妥善保管。</ag-text>
+</ag-quote>
+
+<ag-h level="2" id="ag-h_75_0">3. 素材与话题准备</ag-h>
+<ag-text id="ag-text_76_0">请确保相关目录存在并包含必要文件：</ag-text>
+<ag-bullet id="ag-bullet_77_0">
+  <ag-list-item id="ag-list-item_78_0"><ag-text-inline id="ag-text-inline_79_0"><strong id="strong_80_0">图片素材</strong>：将 jpg/png/webp 格式的图片放入 <ag-code-inline id="ag-code-inline_81_0">/home/user/workspace/upload/</ag-code-inline> 目录。生成脚本会自动从中选取图片。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_82_0"><ag-text-inline id="ag-text-inline_83_0"><strong id="strong_84_0">话题列表</strong>：编辑 <ag-code-inline id="ag-code-inline_85_0">data/topics.json</ag-code-inline>，填入您想发布的选题数组。</ag-text-inline></ag-list-item>
+</ag-bullet>
+<ag-code language="Json" caption="data/topics.json 示例" id="ag-code_86_0">
+[
+  &#34;夏季油皮护肤心得&#34;,
+  &#34;上海周末看展指南&#34;,
+  &#34;程序员的高效办公好物&#34;
+]
+</ag-code>
+
+<ag-h level="1" seq="auto" id="ag-h_87_0">文案自动生成（AI）</ag-h>
+<ag-text id="ag-text_88_0">生成模块通过读取预设的话题列表，调用 OpenAI 模型（默认为 <ag-code-inline id="ag-code-inline_89_0">gpt-4.1-mini</ag-code-inline>）生成符合小红书风格的笔记内容。</ag-text>
+
+<ag-h level="2" id="ag-h_90_0">执行生成</ag-h>
+<ag-text id="ag-text_91_0">运行以下命令启动生成任务：</ag-text>
+<ag-code language="Bash" id="ag-code_92_0">
+# 使用 CLI
+node src/cli.js generate
+
+# 或使用 npm script
+npm run generate
+</ag-code>
+
+<ag-h level="2" id="ag-h_93_0">逻辑说明</ag-h>
+<ag-text id="ag-text_94_0">生成脚本执行逻辑如下：</ag-text>
+<ag-ordered id="ag-ordered_95_0">
+  <ag-list-item seq="1" id="ag-list-item_96_0"><ag-text-inline id="ag-text-inline_97_0">读取 <ag-code-inline id="ag-code-inline_98_0">data/topics.json</ag-code-inline> 中的所有话题。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_99_0"><ag-text-inline id="ag-text-inline_100_0">对每个话题，Prompt 模型生成包含 “标题（含钩子）”、“正文（分点陈述）” 和 “标签” 的 JSON 数据。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_101_0"><ag-text-inline id="ag-text-inline_102_0">从 <ag-code-inline id="ag-code-inline_103_0">/upload</ag-code-inline> 目录随机或顺序选取最多 6 张图片（可在 <ag-code-inline id="ag-code-inline_104_0">src/generator.js</ag-code-inline> 的 <ag-code-inline id="ag-code-inline_105_0">pickImages</ag-code-inline> 函数中自定义逻辑）。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_106_0"><ag-text-inline id="ag-text-inline_107_0">将生成结果追加写入 <ag-code-inline id="ag-code-inline_108_0">data/queue.csv</ag-code-inline> 文件，作为待发布队列。</ag-text-inline></ag-list-item>
+</ag-ordered>
+
+<ag-h level="1" seq="auto" id="ag-h_109_0">图文自动发布（浏览器自动化）</ag-h>
+<ag-text id="ag-text_110_0">发布模块读取 CSV 队列中的任务，启动带有用户 Cookies 的浏览器会话，模拟真实用户操作完成发布。</ag-text>
+
+<ag-h level="2" id="ag-h_111_0">执行发布</ag-h>
+<ag-text id="ag-text_112_0">运行以下命令启动发布任务：</ag-text>
+<ag-code language="Bash" id="ag-code_113_0">
+# 使用 CLI
+node src/cli.js publish
+
+# 或使用 npm script
+npm run publish
+</ag-code>
+
+<ag-h level="2" id="ag-h_114_0">自动化流程与容错</ag-h>
+<ag-text id="ag-text_115_0">发布脚本 (<ag-code-inline id="ag-code-inline_116_0">src/publisher.js</ag-code-inline>) 会依次执行：</ag-text>
+<ag-timeline id="ag-timeline_117_0">
+  <ag-timeline-item icon="1" id="ag-timeline-item_118_0">
+    <ag-text id="ag-text_119_0"><strong id="strong_120_0">初始化</strong>：启动 Chromium 浏览器，加载 <ag-code-inline id="ag-code-inline_121_0">cookies.json</ag-code-inline>，访问创作者中心。</ag-text>
+  </ag-timeline-item>
+  <ag-timeline-item icon="2" id="ag-timeline-item_122_0">
+    <ag-text id="ag-text_123_0"><strong id="strong_124_0">上传图片</strong>：自动寻找文件上传控件（input[type=file]）或点击 “上传图片” 按钮，上传 CSV 中指定的图片文件。</ag-text>
+  </ag-timeline-item>
+  <ag-timeline-item icon="3" id="ag-timeline-item_125_0">
+    <ag-text id="ag-text_126_0"><strong id="strong_127_0">填写内容</strong>：通过 Placeholder 文本定位标题、正文与话题输入框，模拟键盘输入。</ag-text>
+  </ag-timeline-item>
+  <ag-timeline-item icon="4" id="ag-timeline-item_128_0">
+    <ag-text id="ag-text_129_0"><strong id="strong_130_0">提交发布</strong>：识别 “发布” 按钮并点击，等待页面响应后关闭当前页面，处理下一个任务。</ag-text>
+  </ag-timeline-item>
+</ag-timeline>
+<ag-text id="ag-text_131_0"><strong id="strong_132_0">注意</strong>：如果遇到页面改版导致的选择器失效，程序内置了多种文本选择器候补策略。建议首次运行时开启非无头模式（headless: false），观察浏览器操作并查看控制台日志。</ag-text>
+
+<ag-h level="1" seq="auto" id="ag-h_133_0">批量队列（CSV）管理</ag-h>
+<ag-text id="ag-text_134_0">所有待发布任务均存储于 <ag-code-inline id="ag-code-inline_135_0">data/queue.csv</ag-code-inline>。您可以手动编辑此文件来调整发布内容或新增任务。</ag-text>
+
+<ag-h level="2" id="ag-h_136_0">字段定义</ag-h>
+<ag-table header-row="" id="ag-table_137_0">
+  <ag-thead id="ag-thead_138_0">
+    <ag-tr id="ag-tr_139_0">
+      <ag-th id="ag-th_140_0">字段名</ag-th>
+      <ag-th id="ag-th_141_0">必填</ag-th>
+      <ag-th id="ag-th_142_0">说明</ag-th>
+      <ag-th id="ag-th_143_0">示例格式</ag-th>
+    </ag-tr>
+  </ag-thead>
+  <ag-tbody id="ag-tbody_144_0">
+    <ag-tr id="ag-tr_145_0">
+      <ag-td id="ag-td_146_0">title</ag-td>
+      <ag-td id="ag-td_147_0">是</ag-td>
+      <ag-td id="ag-td_148_0">笔记标题，建议 30 字以内</ag-td>
+      <ag-td id="ag-td_149_0">夏日美白大作战！亲测有效</ag-td>
+    </ag-tr>
+    <ag-tr id="ag-tr_150_0">
+      <ag-td id="ag-td_151_0">body</ag-td>
+      <ag-td id="ag-td_152_0">是</ag-td>
+      <ag-td id="ag-td_153_0">笔记正文，支持换行</ag-td>
+      <ag-td id="ag-td_154_0">第一点... 第二点...</ag-td>
+    </ag-tr>
+    <ag-tr id="ag-tr_155_0">
+      <ag-td id="ag-td_156_0">tags</ag-td>
+      <ag-td id="ag-td_157_0">否</ag-td>
+      <ag-td id="ag-td_158_0">话题标签，多个标签用逗号分隔</ag-td>
+      <ag-td id="ag-td_159_0">#护肤，#美白，#夏季</ag-td>
+    </ag-tr>
+    <ag-tr id="ag-tr_160_0">
+      <ag-td id="ag-td_161_0">images</ag-td>
+      <ag-td id="ag-td_162_0">是</ag-td>
+      <ag-td id="ag-td_163_0">图片文件名，多个图片用分号 (;) 分隔</ag-td>
+      <ag-td id="ag-td_164_0">img1.jpg;img2.png</ag-td>
+    </ag-tr>
+  </ag-tbody>
+</ag-table>
+
+<ag-text id="ag-text_165_0">以下是两个关键的数据文件模板，您可以在项目中直接使用：</ag-text>
+<ag-text id="ag-text_166_0"><strong id="strong_167_0">1. 待发布队列模板 (queue.csv)</strong></ag-text>
+<ag-file token="U5TabwqnboSBh5xhYrVlqE9bgFf" id="ag-file_168_0"></ag-file>
+<ag-text id="ag-text_169_0"><strong id="strong_170_0">2. 话题配置模板 (topics.json)</strong></ag-text>
+<ag-file token="SitRbnVdBo9hXexnfCOl2rXtgdc" id="ag-file_171_0"></ag-file>
+
+<ag-h level="1" seq="auto" id="ag-h_172_0">常见故障排查</ag-h>
+
+<ag-column width-ratio="1" id="ag-column_173_0">
+  <ag-column-item width-ratio="0.5" id="ag-column-item_174_0">
+    <ag-card class="px-5 py-6 bg-red-50 rounded-lg h-full" id="ag-card_175_0">
+      <ag-h level="3" id="ag-h_176_0">Cookies 失效 / 登录失败</ag-h>
+      <ag-text id="ag-text_177_0"><strong id="strong_178_0">现象</strong>：控制台报错 “Cookies file not found” 或浏览器打开后未登录。<br id="br_179_0"/><strong id="strong_180_0">解决</strong>：<br id="br_181_0"/></ag-text>
+      <ag-bullet id="ag-bullet_182_0">
+        <ag-list-item id="ag-list-item_183_0"><ag-text-inline id="ag-text-inline_184_0">确认 <ag-code-inline id="ag-code-inline_185_0">cookies.json</ag-code-inline> 是否在 <ag-code-inline id="ag-code-inline_186_0">/upload</ag-code-inline> 目录。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_187_0"><ag-text-inline id="ag-text-inline_188_0">Cookies 可能已过期，请重新在本地登录并导出最新 Cookies。</ag-text-inline></ag-list-item>
+      </ag-bullet>
+    </ag-card>
+  </ag-column-item>
+  <ag-column-item width-ratio="0.5" id="ag-column-item_189_0">
+    <ag-card class="px-5 py-6 bg-red-50 rounded-lg h-full" id="ag-card_190_0">
+      <ag-h level="3" id="ag-h_191_0">元素定位失败</ag-h>
+      <ag-text id="ag-text_192_0"><strong id="strong_193_0">现象</strong>：日志提示 “未找到文件选择器” 或 “未找到发布按钮”。<br id="br_194_0"/><strong id="strong_195_0">解决</strong>：<br id="br_196_0"/></ag-text>
+      <ag-bullet id="ag-bullet_197_0">
+        <ag-list-item id="ag-list-item_198_0"><ag-text-inline id="ag-text-inline_199_0">小红书后台可能进行了改版。请检查 <ag-code-inline id="ag-code-inline_200_0">src/publisher.js</ag-code-inline> 中的 <ag-code-inline id="ag-code-inline_201_0">locator</ag-code-inline> 或文本匹配规则。</ag-text-inline></ag-list-item>
+        <ag-list-item id="ag-list-item_202_0"><ag-text-inline id="ag-text-inline_203_0">尝试人工介入一次（程序在无头模式关闭时支持弹窗人工操作）。</ag-text-inline></ag-list-item>
+      </ag-bullet>
+    </ag-card>
+  </ag-column-item>
+</ag-column>
+
+<ag-h level="1" seq="auto" id="ag-h_204_0">合规说明与运营建议</ag-h>
+<ag-card class="px-5 py-6 bg-blue-50 rounded-lg border-l-4 border-blue-500" id="ag-card_205_0">
+  <ag-h level="3" id="ag-h_206_0">合规与风控声明</ag-h>
+  <ag-text id="ag-text_207_0">本项目仅作为技术研究与辅助运营工具，使用时请务必遵守以下原则：</ag-text>
+  <ag-bullet id="ag-bullet_208_0">
+    <ag-list-item id="ag-list-item_209_0"><ag-text-inline id="ag-text-inline_210_0"><strong id="strong_211_0">技术合规</strong>：本项目完全基于网页端模拟操作（RPA），未使用任何非官方逆向 API，不涉及破解加密参数。</ag-text-inline></ag-list-item>
+    <ag-list-item id="ag-list-item_212_0"><ag-text-inline id="ag-text-inline_213_0"><strong id="strong_214_0">频率限制</strong>：请勿高频连续发布。建议在 <ag-code-inline id="ag-code-inline_215_0">publisher.js</ag-code-inline> 中适当增加 <ag-code-inline id="ag-code-inline_216_0">waitForTimeout</ag-code-inline> 间隔，避免触发平台风控。</ag-text-inline></ag-list-item>
+    <ag-list-item id="ag-list-item_217_0"><ag-text-inline id="ag-text-inline_218_0"><strong id="strong_219_0">内容质量</strong>：AI 生成的内容建议经过人工复核。高质量、真实、有价值的内容才是账号长期发展的关键。避免发布同质化严重的垃圾信息。</ag-text-inline></ag-list-item>
+    <ag-list-item id="ag-list-item_220_0"><ag-text-inline id="ag-text-inline_221_0"><strong id="strong_222_0">版权注意</strong>：请确保使用的图片素材拥有合法版权，避免侵权纠纷。</ag-text-inline></ag-list-item>
+  </ag-bullet>
+</ag-card>
+
+<ag-h level="1" seq="auto" id="ag-h_223_0">交付与后续支持</ag-h>
+<ag-text id="ag-text_224_0">项目代码已准备就绪，您可以通过以下方式获取或部署：</ag-text>
+<ag-ordered id="ag-ordered_225_0">
+  <ag-list-item seq="1" id="ag-list-item_226_0"><ag-text-inline id="ag-text-inline_227_0"><strong id="strong_228_0">压缩包交付</strong>：直接导出当前工作区文件为 ZIP 包。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_229_0"><ag-text-inline id="ag-text-inline_230_0"><strong id="strong_231_0">自行推送</strong>：您可以将代码下载后推送到您的私有 Git 仓库。</ag-text-inline></ag-list-item>
+  <ag-list-item id="ag-list-item_232_0"><ag-text-inline id="ag-text-inline_233_0"><strong id="strong_234_0">代为推送</strong>：如果您提供 GitHub 仓库 URL 和具有 Push 权限的 PAT（Personal Access Token），我可以协助推送到指定仓库。<strong id="strong_235_0">注意：请授予最小权限并用后即焚。</strong></ag-text-inline></ag-list-item>
+</ag-ordered></root>
